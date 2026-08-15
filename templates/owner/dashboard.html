@@ -1,0 +1,108 @@
+{% extends "owner_base.html" %}
+
+{% block title %}Owner Dashboard | RentEase{% endblock %}
+
+{% block owner_content %}
+<div style="margin-bottom: 2rem;">
+    <h2>Welcome back, <span class="gradient-text">{{ session.get('username') }}</span>!</h2>
+    <p style="color: var(--text-secondary);">Here's an overview of your inventory and earnings.</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="grid" style="margin-bottom: 3rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+    <!-- Card 1 -->
+    <div style="background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 16px; padding: 24px; position: relative;">
+        <i class="fas fa-box" style="position: absolute; top: 24px; right: 24px; font-size: 1.5rem; color: var(--blue-electric); text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);"></i>
+        <h3 class="gradient-text mono" style="margin: 0 0 0.5rem; font-size: 2.2rem; font-family: 'Orbitron', sans-serif;">{{ stats.total_items }}</h3>
+        <p style="color: var(--grey-text); font-size: 0.75rem; text-transform: uppercase; margin: 0; font-weight: 600; letter-spacing: 1px;">Total Items Listed</p>
+    </div>
+    
+    <!-- Card 2 -->
+    <div style="background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 16px; padding: 24px; position: relative;">
+        <i class="fas fa-handshake" style="position: absolute; top: 24px; right: 24px; font-size: 1.5rem; color: var(--green-bright); text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);"></i>
+        <h3 class="gradient-text mono" style="margin: 0 0 0.5rem; font-size: 2.2rem; font-family: 'Orbitron', sans-serif;">{{ stats.active_rentals }}</h3>
+        <p style="color: var(--grey-text); font-size: 0.75rem; text-transform: uppercase; margin: 0; font-weight: 600; letter-spacing: 1px;">Active Rentals</p>
+    </div>
+    
+    <!-- Card 3 -->
+    <div style="background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 16px; padding: 24px; position: relative;">
+        <i class="fas fa-clock" style="position: absolute; top: 24px; right: 24px; font-size: 1.5rem; color: #ffc800; text-shadow: 0 0 10px rgba(255, 200, 0, 0.5);"></i>
+        <h3 class="gradient-text mono" style="margin: 0 0 0.5rem; font-size: 2.2rem; font-family: 'Orbitron', sans-serif;">{{ stats.pending_requests }}</h3>
+        <p style="color: var(--grey-text); font-size: 0.75rem; text-transform: uppercase; margin: 0; font-weight: 600; letter-spacing: 1px;">Pending Requests</p>
+    </div>
+    
+    <!-- Card 4 -->
+    <div style="background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 16px; padding: 24px; position: relative;">
+        <i class="fas fa-rupee-sign" style="position: absolute; top: 24px; right: 24px; font-size: 1.5rem; color: var(--green-bright); text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);"></i>
+        <h3 class="gradient-text mono" style="margin: 0 0 0.5rem; font-size: 2.2rem; font-family: 'Orbitron', sans-serif;">₹{{ stats.total_earnings }}</h3>
+        <p style="color: var(--grey-text); font-size: 0.75rem; text-transform: uppercase; margin: 0; font-weight: 600; letter-spacing: 1px;">Total Earnings</p>
+    </div>
+</div>
+
+<!-- Items Table -->
+<div class="card reveal" style="padding: 0; overflow: hidden;">
+    <div style="padding: 1.5rem; border-bottom: 1px solid var(--grey-mid);">
+        <h3 style="margin: 0;">Your Listed Items</h3>
+    </div>
+    
+    {% if items %}
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; min-width: 700px;">
+            <thead>
+                <tr style="background: rgba(255,255,255,0.05); color: var(--text-secondary); font-size: 0.9rem;">
+                    <th style="padding: 1rem 1.5rem;">Image</th>
+                    <th style="padding: 1rem 1.5rem;">Title</th>
+                    <th style="padding: 1rem 1.5rem;">Category</th>
+                    <th style="padding: 1rem 1.5rem;">Price/Day</th>
+                    <th style="padding: 1rem 1.5rem;">Status</th>
+                    <th style="padding: 1rem 1.5rem; text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s;">
+                    <td style="padding: 1rem 1.5rem;">
+                        {% if item.image_url %}
+                            <img src="{{ url_for('static', filename='uploads/' + item.image_url) }}" alt="{{ item.title }}" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;">
+                        {% else %}
+                            <div style="width: 50px; height: 50px; border-radius: 8px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">
+                                <i class="fas fa-image"></i>
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1rem 1.5rem; font-weight: 500;">{{ item.title }}</td>
+                    <td style="padding: 1rem 1.5rem; color: var(--text-secondary);">{{ item.category }}</td>
+                    <td style="padding: 1rem 1.5rem;">₹{{ item.price_per_day }}</td>
+                    <td style="padding: 1rem 1.5rem;">
+                        {% if item.is_available %}
+                            <span class="badge-accepted">Available</span>
+                        {% else %}
+                            <span class="badge-rejected">Rented</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1rem 1.5rem; text-align: right;">
+                        <a href="#" style="color: var(--neon-cyan); margin-right: 10px; font-size: 1.2rem;"><i class="fas fa-edit"></i></a>
+                        <a href="#" style="color: var(--neon-pink); font-size: 1.2rem;"><i class="fas fa-trash-alt"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div style="padding: 4rem 2rem; text-align: center;">
+        <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: var(--text-secondary); margin: 0 auto 1.5rem;">
+            <i class="fas fa-box-open"></i>
+        </div>
+        <h4 style="margin-bottom: 0.5rem;">No items listed yet</h4>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Start earning by listing your first piece of gear.</p>
+        <a href="{{ url_for('add_item') }}" class="btn btn-primary">List an Item</a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Floating Action Button -->
+<a href="{{ url_for('add_item') }}" class="fab" title="List New Item">
+    <i class="fas fa-plus"></i>
+</a>
+{% endblock %}

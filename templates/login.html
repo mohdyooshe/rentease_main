@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Log In | RentEase{% endblock %}
+
+{% block content %}
+<div class="mt-4 mb-4" style="margin-top: 8vh;">
+    <div class="form-container reveal">
+        <div class="text-center mb-4">
+            <h2 style="font-size: 2.2rem; margin-bottom: 0.5rem;">Welcome Back</h2>
+            <p style="color: var(--text-secondary);">Log in to continue to <span class="gradient-text" style="font-weight: 600;">RentEase</span>.</p>
+        </div>
+        
+        <form method="POST" action="{{ url_for('login') }}">
+            <div>
+                <label for="email" style="color: var(--text-secondary); font-size: 0.9rem;">Email Address</label>
+                <input type="email" id="email" name="email" required placeholder="you@example.com">
+            </div>
+            
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label for="password" style="color: var(--text-secondary); font-size: 0.9rem;">Password</label>
+                    <a href="#" style="font-size: 0.8rem; color: var(--neon-cyan); text-decoration: none;">Forgot password?</a>
+                </div>
+                <input type="password" id="password" name="password" required placeholder="••••••••">
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem; padding: 14px; font-size: 1.1rem;">Log In</button>
+        </form>
+        
+        <div class="text-center mt-4" style="position: relative;">
+            <hr style="border: 0; border-top: 1px solid var(--grey-mid); margin: 2rem 0;">
+            <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: rgba(10,10,10,0.9); padding: 0 10px; color: var(--grey-text); font-size: 0.9rem; border-radius: 4px;">or</span>
+        </div>
+        
+        <p class="text-center mt-2" style="font-size: 0.95rem; color: var(--text-secondary);">
+            Don't have an account? <a href="{{ url_for('signup') }}" style="color: var(--neon-pink); font-weight: 600; text-decoration: none;">Sign up here</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

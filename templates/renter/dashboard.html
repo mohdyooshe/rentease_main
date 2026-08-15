@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Renter Dashboard | RentEase{% endblock %}
+
+{% block content %}
+<div class="mt-4 mb-4">
+    <h2>Welcome back, <span class="gradient-text">{{ session.get('username') }}</span>!</h2>
+    <p style="color: var(--text-secondary);">Here's an overview of your rental activity.</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="grid" style="margin-bottom: 3rem; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+    <!-- Stat 1 -->
+    <div class="card reveal" style="padding: 2rem; display: flex; align-items: center; gap: 1.5rem;">
+        <div style="width: 60px; height: 60px; border-radius: 16px; background: rgba(0, 255, 136, 0.1); display: flex; align-items: center; justify-content: center; color: var(--green-bright); font-size: 1.8rem; box-shadow: inset 0 0 10px rgba(0, 255, 136, 0.2);">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div>
+            <p style="color: var(--grey-text); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0;">Active Rentals</p>
+            <h3 class="gradient-text mono" style="margin: 0; font-size: 2.2rem;">{{ stats.active_rentals }}</h3>
+        </div>
+    </div>
+    
+    <!-- Stat 2 -->
+    <div class="card reveal" style="padding: 2rem; display: flex; align-items: center; gap: 1.5rem; animation-delay: 0.1s;">
+        <div style="width: 60px; height: 60px; border-radius: 16px; background: rgba(255, 200, 0, 0.1); display: flex; align-items: center; justify-content: center; color: #ffc800; font-size: 1.8rem; box-shadow: inset 0 0 10px rgba(255, 200, 0, 0.2);">
+            <i class="fas fa-hourglass-half"></i>
+        </div>
+        <div>
+            <p style="color: var(--grey-text); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0;">Pending Requests</p>
+            <h3 class="gradient-text mono" style="margin: 0; font-size: 2.2rem;">{{ stats.pending_requests }}</h3>
+        </div>
+    </div>
+    
+    <!-- Stat 3 -->
+    <div class="card reveal" style="padding: 2rem; display: flex; align-items: center; gap: 1.5rem; animation-delay: 0.2s;">
+        <div style="width: 60px; height: 60px; border-radius: 16px; background: rgba(0, 212, 255, 0.1); display: flex; align-items: center; justify-content: center; color: var(--blue-electric); font-size: 1.8rem; box-shadow: inset 0 0 10px rgba(0, 212, 255, 0.2);">
+            <i class="fas fa-wallet"></i>
+        </div>
+        <div>
+            <p style="color: var(--grey-text); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0;">Total Spent</p>
+            <h3 class="gradient-text mono" style="margin: 0; font-size: 2.2rem;">₹{{ stats.total_spent }}</h3>
+        </div>
+    </div>
+</div>
+
+<div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+    <!-- Quick Action: Browse -->
+    <a href="{{ url_for('browse') }}" class="card reveal text-center" style="text-decoration: none; display: block;">
+        <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 255, 136, 0.1)); display: flex; align-items: center; justify-content: center; color: var(--blue-electric); font-size: 2.5rem; margin: 0 auto 1.5rem; box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);">
+            <i class="fas fa-search"></i>
+        </div>
+        <h3 style="color: white; margin-bottom: 0.5rem;">Find Gear</h3>
+        <p style="color: var(--grey-text);">Browse available equipment to rent.</p>
+    </a>
+    
+    <!-- Quick Action: Orders -->
+    <a href="{{ url_for('renter_orders') }}" class="card reveal text-center" style="text-decoration: none; display: block; animation-delay: 0.1s;">
+        <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 255, 136, 0.1)); display: flex; align-items: center; justify-content: center; color: var(--green-bright); font-size: 2.5rem; margin: 0 auto 1.5rem; box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);">
+            <i class="fas fa-list-alt"></i>
+        </div>
+        <h3 style="color: white; margin-bottom: 0.5rem;">My Orders</h3>
+        <p style="color: var(--grey-text);">View the status of your rental requests.</p>
+    </a>
+</div>
+{% endblock %}

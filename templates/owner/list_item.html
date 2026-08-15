@@ -1,0 +1,144 @@
+{% extends "owner_base.html" %}
+
+{% block title %}List Item | RentEase{% endblock %}
+
+{% block owner_content %}
+<div style="max-width: 800px;">
+    <div style="margin-bottom: 2rem;">
+        <h2>List <span class="gradient-text">New Item</span></h2>
+        <p style="color: var(--text-secondary);">Fill out the details below to publish your gear for rent.</p>
+    </div>
+
+    <div class="card reveal">
+        <form method="POST" action="{{ url_for('add_item') }}" enctype="multipart/form-data">
+            <div class="grid" style="gap: 1.5rem; margin-bottom: 0;">
+                <div>
+                    <label for="title" style="color: var(--text-secondary); font-size: 0.9rem;">Item Title</label>
+                    <input type="text" id="title" name="title" required placeholder="e.g., Sony A7III Mirrorless Camera">
+                </div>
+                
+                <div>
+                    <label for="category" style="color: var(--text-secondary); font-size: 0.9rem;">Category</label>
+                    <select id="category" name="category" required style="cursor: pointer;">
+                        <option value="" disabled selected>Select a category...</option>
+                        <option value="Mobile Phones">Mobile Phones</option>
+                        <option value="Laptops">Laptops</option>
+                        <option value="Cameras">Cameras</option>
+                        <option value="Gaming">Gaming Consoles</option>
+                        <option value="Audio">Audio Equipment</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label for="description" style="color: var(--text-secondary); font-size: 0.9rem;">Description</label>
+                <textarea id="description" name="description" rows="5" required placeholder="Describe the item's condition, included accessories, and any rules for renters."></textarea>
+            </div>
+            
+            <div class="grid" style="gap: 1.5rem; align-items: start;">
+                <!-- Product Cost -->
+                <div>
+                    <label for="product_price" style="color: var(--text-secondary); font-size: 0.9rem;">Total Product Cost (₹)</label>
+                    <div style="position: relative;">
+                        <span style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-secondary);">₹</span>
+                        <input type="number" id="product_price" name="product_price" required min="1" step="1" placeholder="e.g. 50000" style="padding-left: 35px; margin-bottom: 0;">
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 6px;">💡 30% of this will be charged to renter as security deposit</p>
+                    
+                    <div class="deposit-preview">
+                        Security Deposit charged to renter: <br>
+                        <span id="deposit-amount">₹0</span> (30% of product cost)
+                    </div>
+                </div>
+
+                <!-- Rent Per Day -->
+                <div>
+                    <label for="price_per_day" style="color: var(--text-secondary); font-size: 0.9rem;">Rent Per Day (₹)</label>
+                    <div style="position: relative;">
+                        <span style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-secondary);">₹</span>
+                        <input type="number" id="price_per_day" name="price_per_day" required min="1" step="1" placeholder="500" style="padding-left: 35px; margin-bottom: 0;">
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 6px;">Daily rental charge for the renter</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 1.5rem;">
+                <label for="image" style="color: var(--text-secondary); font-size: 0.9rem;">Upload Image</label>
+                <input type="file" id="image" name="image" accept="image/*" required style="padding: 10px; background: rgba(0,0,0,0.2); cursor: pointer;" onchange="previewImage(event)">
+                <div id="imagePreviewContainer" style="margin-top: 10px; display: none;">
+                    <img id="imagePreview" src="#" alt="Preview" style="max-width: 100%; max-height: 200px; border-radius: 12px; border: 1px solid var(--glass-border);">
+                </div>
+            </div>
+
+            <!-- Pricing Summary Box -->
+            <div class="pricing-summary-box">
+                <h4>📊 PRICING SUMMARY</h4>
+                <div class="summary-row">
+                    <span>Product Value:</span>
+                    <span id="preview-product-value">₹0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Rent Per Day:</span>
+                    <span id="preview-rent-per-day">₹0</span>
+                </div>
+                <div style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1);">
+                    <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 8px;">What renter pays:</p>
+                    <div class="summary-row">
+                        <span>Rent (X days):</span>
+                        <span>₹X,XXX</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Security Deposit:</span>
+                        <span id="preview-deposit">₹0</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total Charged:</span>
+                        <span>₹X,XXX</span>
+                    </div>
+                </div>
+            </div>
+            
+            <hr style="border: 0; border-top: 1px solid var(--glass-border); margin: 2rem 0;">
+            
+            <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                <a href="{{ url_for('owner_dashboard') }}" class="btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary" style="padding-left: 30px; padding-right: 30px;">Publish Item</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function previewImage(event) {
+        const input = event.target;
+        const reader = new FileReader();
+        reader.onload = function() {
+            const dataURL = reader.result;
+            const img = document.getElementById('imagePreview');
+            img.src = dataURL;
+            document.getElementById('imagePreviewContainer').style.display = 'block';
+        };
+        if(input.files && input.files[0]) {
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    const productPrice = document.getElementById('product_price');
+    const rentPerDay = document.getElementById('price_per_day');
+
+    function updatePreview() {
+        const price = parseFloat(productPrice.value) || 0;
+        const rent = parseFloat(rentPerDay.value) || 0;
+        const deposit = price * 0.30;
+        
+        document.getElementById('deposit-amount').textContent = '₹' + deposit.toLocaleString('en-IN');
+        document.getElementById('preview-product-value').textContent = '₹' + price.toLocaleString('en-IN');
+        document.getElementById('preview-rent-per-day').textContent = '₹' + rent.toLocaleString('en-IN');
+        document.getElementById('preview-deposit').textContent = '₹' + deposit.toLocaleString('en-IN');
+    }
+
+    productPrice.addEventListener('input', updatePreview);
+    rentPerDay.addEventListener('input', updatePreview);
+</script>
+{% endblock %}

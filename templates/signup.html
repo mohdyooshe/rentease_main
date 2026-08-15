@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up | RentEase{% endblock %}
+
+{% block content %}
+<div class="mt-4 mb-4" style="margin-top: 4vh;">
+    <div class="form-container reveal">
+        <div class="text-center mb-4">
+            <h2 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Join <span class="gradient-text">RentEase</span></h2>
+            <p style="color: var(--text-secondary);">Create an account to start renting or earning.</p>
+        </div>
+        
+        <form method="POST" action="{{ url_for('signup') }}">
+            <!-- Role Selection -->
+            <div class="role-selection" style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                <label class="role-card" id="card-renter">
+                    <input type="radio" name="user_type" value="renter" required style="display: none;">
+                    <i class="fas fa-shopping-bag" style="font-size: 2rem; margin-bottom: 1rem; color: var(--blue-electric);"></i>
+                    <h4 style="margin:0;">I want to RENT items</h4>
+                    <p style="font-size: 0.8rem; color: var(--grey-text); margin-top: 0.5rem;">Find and rent equipment for your projects.</p>
+                </label>
+                
+                <label class="role-card" id="card-owner">
+                    <input type="radio" name="user_type" value="owner" required style="display: none;">
+                    <i class="fas fa-store" style="font-size: 2rem; margin-bottom: 1rem; color: var(--green-bright);"></i>
+                    <h4 style="margin:0;">I want to LIST items</h4>
+                    <p style="font-size: 0.8rem; color: var(--grey-text); margin-top: 0.5rem;">Earn money by renting out your gear.</p>
+                </label>
+            </div>
+
+            <div>
+                <label for="full_name" style="color: var(--text-secondary); font-size: 0.9rem;">Full Name</label>
+                <input type="text" id="full_name" name="full_name" required placeholder="John Doe">
+            </div>
+
+            <div>
+                <label for="email" style="color: var(--text-secondary); font-size: 0.9rem;">Email Address</label>
+                <input type="email" id="email" name="email" required placeholder="you@example.com">
+            </div>
+            
+            <div class="grid" style="gap: 1rem; margin-bottom: 0;">
+                <div>
+                    <label for="password" style="color: var(--text-secondary); font-size: 0.9rem;">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="••••••••">
+                </div>
+                <div>
+                    <label for="confirm_password" style="color: var(--text-secondary); font-size: 0.9rem;">Confirm Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" required placeholder="••••••••">
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem; padding: 14px; font-size: 1.1rem;">Create Account</button>
+        </form>
+        
+        <p class="text-center mt-4" style="font-size: 0.95rem; color: var(--text-secondary);">
+            Already have an account? <a href="{{ url_for('login') }}" style="color: var(--blue-electric); font-weight: 600; text-decoration: none;">Log in</a>
+        </p>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.role-card input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            document.querySelectorAll('.role-card').forEach(card => card.classList.remove('selected'));
+            if(this.checked) {
+                this.parentElement.classList.add('selected');
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}RentEase | The Future of Electronics Rental{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-container reveal" style="display: flex; align-items: center; justify-content: space-between; gap: 4rem; padding: 4rem 0 6rem; min-height: 80vh;">
+    
+    <!-- Left Side -->
+    <div style="flex: 1; max-width: 600px;">
+        <div class="mono" style="margin-bottom: 1rem; font-size: 0.9rem;">
+            [ ELECTRONICS RENTAL PLATFORM ] <span style="animation: blink 1s step-end infinite;">|</span>
+        </div>
+        <h1 style="font-size: 4.5rem; line-height: 1.1; margin-bottom: 1rem; text-transform: uppercase;">
+            <span style="color: var(--grey-text); display: block;">The Future of</span>
+            <span class="gradient-text glow-text">Electronics Rental</span>
+        </h1>
+        <p style="font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 2rem; line-height: 1.6;">
+            Rent premium gadgets from real people.<br>
+            Earn money from devices sitting idle.<br>
+            Fast. Secure. Futuristic.
+        </p>
+        
+        <div style="font-size: 1.5rem; font-weight: 600; margin-bottom: 3rem; height: 36px;">
+            Rent <span id="typewriter" class="gradient-text"></span>
+        </div>
+        
+        <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
+            <a href="{{ url_for('browse') }}" class="btn btn-primary">Start Renting &rarr;</a>
+            <a href="{{ url_for('signup') }}" class="btn btn-secondary">List Your Device</a>
+        </div>
+    </div>
+    
+    <!-- Right Side (Mosaic) -->
+    <div class="mosaic-grid" style="flex: 1; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; position: relative;">
+        <!-- Card 1: Laptop -->
+        <div class="glass-panel" style="padding: 0; position: relative; overflow: hidden; border-radius: 16px; animation: float 4s ease-in-out infinite;">
+            <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&q=80" alt="Laptop" style="width: 100%; height: 250px; border: none; border-radius: 0;">
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem; background: linear-gradient(transparent, rgba(0,0,0,0.9)); display: flex; justify-content: space-between; align-items: flex-end;">
+                <span style="font-weight: 600;">MacBook Pro</span>
+                <span class="badge-accepted">₹800/day</span>
+            </div>
+        </div>
+        
+        <!-- Card 2: Camera -->
+        <div class="glass-panel" style="padding: 0; position: relative; overflow: hidden; border-radius: 16px; animation: float 4s ease-in-out infinite; animation-delay: 0.5s; margin-top: 3rem;">
+            <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&q=80" alt="Camera" style="width: 100%; height: 200px; border: none; border-radius: 0;">
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem; background: linear-gradient(transparent, rgba(0,0,0,0.9)); display: flex; justify-content: space-between; align-items: flex-end;">
+                <span style="font-weight: 600;">Sony A7III</span>
+                <span class="badge-accepted">₹1200/day</span>
+            </div>
+        </div>
+        
+        <!-- Card 3: Drone -->
+        <div class="glass-panel" style="padding: 0; position: relative; overflow: hidden; border-radius: 16px; animation: float 4s ease-in-out infinite; animation-delay: 1s; margin-top: -3rem;">
+            <img src="https://images.unsplash.com/photo-1507582020474-9a35b7d455d9?w=400&q=80" alt="Drone" style="width: 100%; height: 220px; border: none; border-radius: 0;">
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem; background: linear-gradient(transparent, rgba(0,0,0,0.9)); display: flex; justify-content: space-between; align-items: flex-end;">
+                <span style="font-weight: 600;">DJI Mavic</span>
+                <span class="badge-accepted">₹1500/day</span>
+            </div>
+        </div>
+        
+        <!-- Card 4: Console -->
+        <div class="glass-panel" style="padding: 0; position: relative; overflow: hidden; border-radius: 16px; animation: float 4s ease-in-out infinite; animation-delay: 1.5s;">
+            <img src="https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&q=80" alt="Console" style="width: 100%; height: 270px; border: none; border-radius: 0;">
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem; background: linear-gradient(transparent, rgba(0,0,0,0.9)); display: flex; justify-content: space-between; align-items: flex-end;">
+                <span style="font-weight: 600;">PS5</span>
+                <span class="badge-accepted">₹500/day</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+</style>
+{% endblock %}
+
+{% block main_container %}
+    {{ super() }}
+
+    <!-- Video Section (Full Width, outside container) -->
+    <section class="video-section reveal">
+        <div class="video-overlay"></div>
+        <iframe 
+            src="https://www.youtube.com/embed/LXb3EKWsInQ?autoplay=1&mute=1&loop=1&playlist=LXb3EKWsInQ&controls=0&showinfo=0"
+            frameborder="0"
+            allow="autoplay; fullscreen">
+        </iframe>
+        <div class="video-content">
+            <p class="mono">// WHY RENTEASE?</p>
+            <h2 style="font-size: 3rem;">Smarter Way to Access Tech</h2>
+            <div class="stats-row">
+                <div class="stat">
+                    <span class="mono glow-text">500+</span>
+                    <p>Gadgets Listed</p>
+                </div>
+                <div class="stat">
+                    <span class="mono glow-text">2min</span>
+                    <p>Avg Approval Time</p>
+                </div>
+                <div class="stat">
+                    <span class="mono glow-text">100%</span>
+                    <p>Secure Rentals</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container reveal">
+        <!-- Categories Section -->
+        <div class="mt-4 mb-4">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+                <h2 style="font-size: 2.5rem; margin: 0;">Explore <span class="gradient-text">Categories</span></h2>
+                <a href="{{ url_for('browse') }}" style="color: var(--blue-electric); text-decoration: none; font-weight: 600; text-transform: uppercase; font-family: 'Orbitron', sans-serif;">View All <i class="fas fa-arrow-right"></i></a>
+            </div>
+            
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                <a href="#" class="card text-center" style="text-decoration: none; display: block;">
+                    <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200" alt="Smartphones" style="height: 120px; margin-bottom: 1rem;">
+                    <h4 style="color: white; margin: 0;">📱 Smartphones</h4>
+                    <p style="color: var(--grey-text); font-size: 0.85rem; margin-top: 0.5rem;">42 items</p>
+                </a>
+                <a href="#" class="card text-center" style="text-decoration: none; display: block;">
+                    <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=200" alt="Laptops" style="height: 120px; margin-bottom: 1rem;">
+                    <h4 style="color: white; margin: 0;">💻 Laptops</h4>
+                    <p style="color: var(--grey-text); font-size: 0.85rem; margin-top: 0.5rem;">28 items</p>
+                </a>
+                <a href="#" class="card text-center" style="text-decoration: none; display: block;">
+                    <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=200" alt="Cameras" style="height: 120px; margin-bottom: 1rem;">
+                    <h4 style="color: white; margin: 0;">📷 Cameras</h4>
+                    <p style="color: var(--grey-text); font-size: 0.85rem; margin-top: 0.5rem;">15 items</p>
+                </a>
+                <a href="#" class="card text-center" style="text-decoration: none; display: block;">
+                    <img src="https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=200" alt="Gaming" style="height: 120px; margin-bottom: 1rem;">
+                    <h4 style="color: white; margin: 0;">🎮 Gaming</h4>
+                    <p style="color: var(--grey-text); font-size: 0.85rem; margin-top: 0.5rem;">34 items</p>
+                </a>
+                <a href="#" class="card text-center" style="text-decoration: none; display: block;">
+                    <img src="https://images.unsplash.com/photo-1507582020474-9a35b7d455d9?w=200" alt="Drones" style="height: 120px; margin-bottom: 1rem;">
+                    <h4 style="color: white; margin: 0;">🚁 Drones</h4>
+                    <p style="color: var(--grey-text); font-size: 0.85rem; margin-top: 0.5rem;">8 items</p>
+                </a>
+                <a href="#" class="card text-center" style="text-decoration: none; display: block;">
+                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200" alt="Audio" style="height: 120px; margin-bottom: 1rem;">
+                    <h4 style="color: white; margin: 0;">🎧 Audio</h4>
+                    <p style="color: var(--grey-text); font-size: 0.85rem; margin-top: 0.5rem;">19 items</p>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

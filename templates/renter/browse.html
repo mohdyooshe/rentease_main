@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Equipment | RentEase{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <div style="text-align: center; max-width: 600px; margin: 0 auto 3rem;">
+        <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">Find <span class="gradient-text">Your Gear</span></h2>
+        
+        <!-- Live Search Bar -->
+        <div style="position: relative; margin-top: 2rem;">
+            <i class="fas fa-search" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-size: 1.2rem;"></i>
+            <input type="text" id="searchInput" placeholder="Search by title or category..." style="width: 100%; padding: 18px 20px 18px 55px; border-radius: 30px; font-size: 1.1rem; background: rgba(0,0,0,0.4); margin: 0;">
+        </div>
+    </div>
+
+    <!-- Category Filters -->
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-bottom: 3rem;" id="categoryFilters">
+        <button class="filter-btn active" data-filter="all">All Items</button>
+        <button class="filter-btn" data-filter="Cameras">Cameras</button>
+        <button class="filter-btn" data-filter="Laptops">Laptops</button>
+        <button class="filter-btn" data-filter="Mobile Phones">Mobile Phones</button>
+        <button class="filter-btn" data-filter="Gaming">Gaming</button>
+        <button class="filter-btn" data-filter="Audio">Audio</button>
+    </div>
+
+    {% if items %}
+    <div class="products-grid" id="itemsGrid">
+        {% for item in items %}
+        <div class="product-card item-card reveal" data-title="{{ item.title|lower }}" data-category="{{ item.category }}">
+            <div class="card-image">
+                {% if item.image_url %}
+                <img src="{{ url_for('static', filename='uploads/' + item.image_url) }}" 
+                     alt="{{ item.title }}"
+                     loading="lazy"
+                     onerror="this.src='/static/images/placeholder.jpg'">
+                {% else %}
+                <img src="/static/images/placeholder.jpg" alt="Placeholder">
+                {% endif %}
+                <span class="category-badge">
+                  {{ item.category }}
+                </span>
+                <span class="price-badge">
+                  ₹{{ item.price_per_day }}/day
+                </span>
+                <div class="availability"></div>
+            </div>
+            <div class="card-body">
+                <h3 class="item-title">{{ item.title }}</h3>
+                <p class="item-owner">{{ item.owner_name }}</p>
+                <p class="item-description">
+                  {{ item.description }}
+                </p>
+                <div class="card-footer">
+                  <div class="price-text">
+                    ₹{{ item.price_per_day }}
+                    <span>/day</span>
+                  </div>
+                  <button type="button" data-title="{{ item.title }}" onclick="openRentModal({{ item.id }}, this.getAttribute('data-title'), {{ item.price_per_day }}, {{ item.product_price|default(0) }})" class="rent-btn">
+                    Rent Now
+                  </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <!-- No Results Message -->
+    <div id="noResults" class="card reveal text-center" style="display: none; padding: 4rem;">
+        <h3 style="color: var(--text-secondary);">No items found matching your criteria.</h3>
+    </div>
+    {% else %}
+    <div class="card reveal text-center" style="padding: 5rem 2rem;">
+        <h3>No items available right now.</h3>
+        <p style="color: var(--text-secondary);">Please check back later!</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Rent Modal -->
+<div id="rentModal" class="modal-backdrop" style="display: none;">
+    <div class="modal-content form-container" style="max-width: 540px; padding: 32px;">
+        <span class="close-modal" onclick="closeRentModal()">&times;</span>
+        <h2 style="margin-bottom: 1.5rem; text-align: center;">Request <span class="gradient-text" id="modalItemTitle">Item</span></h2>
+        
+        <form id="rentForm" method="POST" action="">
+            <input type="hidden" id="hidden_rent_per_day" value="0">
+            <input type="hidden" id="hidden_product_price" value="0">
+            
+            <div class="grid" style="gap: 1.5rem; margin-bottom: 1.5rem;">
+                <div>
+                    <label for="start_date" style="color: var(--text-secondary); font-size: 0.9rem;">Start Date</label>
+                    <input type="date" id="start_date" name="start_date" required style="cursor: pointer;" onchange="calculateRentalCost()">
+                </div>
+                <div>
+                    <label for="end_date" style="color: var(--text-secondary); font-size: 0.9rem;">End Date</label>
+                    <input type="date" id="end_date" name="end_date" required style="cursor: pointer;" onchange="calculateRentalCost()">
+                </div>
+            </div>
+            
+            <div class="booking-summary" style="margin-bottom: 2rem;">
+                <h4 style="color: var(--text-secondary); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">── PAYMENT BREAKDOWN ──</h4>
+                
+                <div class="payment-row">
+                    <div class="label">
+                        🔵 Rent Amount
+                        <small><span id="calc-rent-per-day">₹0</span>/day × <span id="total-days">0 days</span></small>
+                    </div>
+                    <div class="amount" id="rent-amount">₹0</div>
+                </div>
+                
+                <div class="payment-row deposit">
+                    <div class="label">
+                        🔒 Security Deposit
+                        <small>30% of product value</small>
+                    </div>
+                    <div class="amount" id="security-deposit">₹0</div>
+                </div>
+                
+                <div class="deposit-notice">
+                    Security deposit will be fully refunded when the item is safely returned to the owner.
+                </div>
+                
+                <div class="payment-row grand-total">
+                    <div class="label">💰 TOTAL TO PAY</div>
+                    <div class="amount" id="grand-total">₹0</div>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 1rem;">
+                <button type="button" class="btn-secondary" style="flex: 1;" onclick="closeRentModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="flex: 2; padding: 14px;">Confirm Booking →</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Filter Buttons */
+    .filter-btn {
+        background: #111;
+        border: 1px solid var(--grey-light);
+        color: var(--grey-text);
+        padding: 8px 20px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+    }
+    .filter-btn:hover {
+        background: #1a1a1a;
+        color: white;
+        border-color: var(--blue-electric);
+        box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+    }
+    .filter-btn.active {
+        background: rgba(0, 255, 136, 0.1);
+        border-color: var(--green-bright);
+        color: var(--green-bright);
+        box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+    }
+    
+    /* Item Card Hover */
+    .item-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .item-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.8), 0 0 20px rgba(0, 212, 255, 0.2);
+    }
+    
+    /* Modal Styles */
+    .modal-backdrop {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.8);
+        backdrop-filter: blur(5px);
+        z-index: 2000;
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; transition: opacity 0.3s ease;
+    }
+    .modal-content {
+        width: 100%; max-width: 500px;
+        position: relative;
+        transform: translateY(-20px); transition: transform 0.3s ease;
+    }
+    .close-modal {
+        position: absolute; top: 20px; right: 20px;
+        font-size: 1.8rem; color: var(--text-secondary); cursor: pointer;
+        line-height: 1; transition: color 0.3s ease;
+    }
+    .close-modal:hover { color: white; }
+</style>
+
+<script>
+    // Live Search & Filtering
+    const searchInput = document.getElementById('searchInput');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.item-card');
+    const noResults = document.getElementById('noResults');
+    
+    function filterItems() {
+        if(!searchInput) return;
+        
+        const searchTerm = searchInput.value.toLowerCase();
+        const activeFilter = document.querySelector('.filter-btn.active').getAttribute('data-filter');
+        let visibleCount = 0;
+        
+        cards.forEach(card => {
+            const title = card.getAttribute('data-title');
+            const category = card.getAttribute('data-category');
+            
+            const matchesSearch = title.includes(searchTerm) || category.toLowerCase().includes(searchTerm);
+            const matchesCategory = activeFilter === 'all' || category === activeFilter;
+            
+            if (matchesSearch && matchesCategory) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        if (noResults) {
+            noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+    }
+    
+    if(searchInput) searchInput.addEventListener('input', filterItems);
+    
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            filterItems();
+        });
+    });
+    
+    // Modal Logic
+    function openRentModal(itemId, title, pricePerDay, productPrice) {
+        document.getElementById('rentModal').style.display = 'flex';
+        void document.getElementById('rentModal').offsetWidth;
+        document.getElementById('rentModal').style.opacity = '1';
+        document.querySelector('.modal-content').style.transform = 'translateY(0)';
+        
+        document.getElementById('modalItemTitle').innerText = title;
+        document.getElementById('rentForm').action = '/rent/' + itemId;
+        
+        document.getElementById('hidden_rent_per_day').value = pricePerDay;
+        document.getElementById('hidden_product_price').value = productPrice;
+        document.getElementById('calc-rent-per-day').innerText = '₹' + pricePerDay;
+        
+        document.getElementById('start_date').value = '';
+        document.getElementById('end_date').value = '';
+        document.getElementById('total-days').innerText = '0 days';
+        document.getElementById('rent-amount').innerText = '₹0';
+        document.getElementById('security-deposit').innerText = '₹0';
+        document.getElementById('grand-total').innerText = '₹0';
+        
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('start_date').min = today;
+        document.getElementById('end_date').min = today;
+    }
+    
+    function closeRentModal() {
+        document.getElementById('rentModal').style.opacity = '0';
+        document.querySelector('.modal-content').style.transform = 'translateY(-20px)';
+        setTimeout(() => {
+            document.getElementById('rentModal').style.display = 'none';
+        }, 300);
+    }
+    
+    function calculateRentalCost() {
+        const startVal = document.getElementById('start_date').value;
+        const endVal = document.getElementById('end_date').value;
+        
+        if (startVal && endVal) {
+            const startDate = new Date(startVal);
+            const endDate = new Date(endVal);
+            
+            if (endDate < startDate) {
+                document.getElementById('end_date').value = startVal;
+                calculateRentalCost();
+                return;
+            }
+            
+            const diffTime = Math.abs(endDate - startDate);
+            const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            
+            const rentPerDay = parseFloat(document.getElementById('hidden_rent_per_day').value) || 0;
+            const productPrice = parseFloat(document.getElementById('hidden_product_price').value) || 0;
+            
+            const rentAmount = rentPerDay * totalDays;
+            const securityDeposit = productPrice * 0.30;
+            const grandTotal = rentAmount + securityDeposit;
+            
+            document.getElementById('total-days').textContent = totalDays + (totalDays === 1 ? ' day' : ' days');
+            document.getElementById('rent-amount').textContent = '₹' + rentAmount.toLocaleString('en-IN');
+            document.getElementById('security-deposit').textContent = '₹' + securityDeposit.toLocaleString('en-IN');
+            document.getElementById('grand-total').textContent = '₹' + grandTotal.toLocaleString('en-IN');
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}RentEase | Rent. Earn. Repeat.{% endblock %}</title>
+    <meta name="description" content="Peer-to-peer electronics rental platform.">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <h1 style="font-family: 'Orbitron', sans-serif; font-size: 3rem; margin: 0;" class="gradient-text glow-text">RENTEASE</h1>
+        <div class="loader-ring"></div>
+    </div>
+
+    <!-- Background Elements -->
+    <canvas id="particles-canvas"></canvas>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <nav class="navbar">
+        <a href="{{ url_for('index') }}" class="logo">RentEase</a>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('index') }}" class="nav-link">Home</a></li>
+            <li><a href="{{ url_for('browse') }}" class="nav-link">Browse</a></li>
+            {% if session.get('user_id') %}
+                {% if session.get('user_type') == 'owner' %}
+                    <li><a href="{{ url_for('owner_dashboard') }}" class="nav-link">Owner Dashboard</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('renter_dashboard') }}" class="nav-link">Renter Dashboard</a></li>
+                {% endif %}
+                <li><a href="{{ url_for('logout') }}" class="nav-link">Logout</a></li>
+            {% else %}
+                <li><a href="{{ url_for('login') }}" class="nav-link">Login</a></li>
+                <li><a href="{{ url_for('signup') }}" class="btn btn-primary" style="padding: 8px 24px;">Sign Up</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    {% block main_container %}
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        {% for category, message in messages %}
+                            showToast("{{ message }}", "{{ 'error' if category == 'error' else 'success' }}");
+                        {% endfor %}
+                    });
+                </script>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+    {% endblock %}
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <a href="{{ url_for('index') }}" class="logo" style="display:inline-block; margin-bottom:1rem; font-size: 1.5rem;">RentEase</a>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                    The premium peer-to-peer tech rental platform. Rent what you need, earn from what you own.
+                </p>
+            </div>
+            <div class="footer-col">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="{{ url_for('browse') }}">Browse Equipment</a></li>
+                    <li><a href="#">How it Works</a></li>
+                    <li><a href="#">Trust & Safety</a></li>
+                    <li><a href="#">Pricing</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Connect</h4>
+                <div style="display:flex; gap:1rem; margin-top:1rem;">
+                    <a href="#" style="color:var(--text-secondary); font-size:1.5rem;"><i class="fab fa-twitter"></i></a>
+                    <a href="#" style="color:var(--text-secondary); font-size:1.5rem;"><i class="fab fa-instagram"></i></a>
+                    <a href="#" style="color:var(--text-secondary); font-size:1.5rem;"><i class="fab fa-facebook"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 RentEase. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

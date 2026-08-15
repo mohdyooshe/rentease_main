@@ -1,0 +1,67 @@
+{% extends "owner_base.html" %}
+
+{% block title %}Rental Requests | RentEase{% endblock %}
+
+{% block owner_content %}
+<div style="margin-bottom: 2rem;">
+    <h2>Rental <span class="gradient-text">Requests</span></h2>
+    <p style="color: var(--text-secondary);">Review and manage incoming requests for your gear.</p>
+</div>
+
+{% if requests %}
+<div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem;">
+    {% for req in requests %}
+    <div class="card reveal" style="padding: 0; overflow: hidden; display: flex; flex-direction: column;">
+        <div style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                <h3 style="margin: 0; font-size: 1.2rem;">{{ req.item_title }}</h3>
+                <span class="badge-pending">Pending</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; color: var(--text-secondary); font-size: 0.9rem;">
+                <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(45deg, var(--neon-purple), var(--neon-cyan)); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                    {{ req.renter_name[0]|upper }}
+                </div>
+                <span>Requested by <strong>{{ req.renter_name }}</strong></span>
+            </div>
+        </div>
+        
+        <div style="padding: 1.5rem; flex: 1; background: rgba(0,0,0,0.2);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.8rem;">
+                <span style="color: var(--text-secondary);"><i class="far fa-calendar-alt"></i> Dates</span>
+                <span>{{ req.start_date.strftime('%b %d') }} to {{ req.end_date.strftime('%b %d, %Y') }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.8rem;">
+                <span style="color: var(--text-secondary);"><i class="far fa-clock"></i> Duration</span>
+                <span>{{ req.total_days }} day(s)</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 0.8rem; margin-top: 0.5rem; font-weight: bold;">
+                <span>Total Amount</span>
+                <span style="color: var(--neon-cyan); font-size: 1.1rem;">₹{{ req.total_amount }}</span>
+            </div>
+        </div>
+        
+        <div style="padding: 1.2rem 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); display: flex; gap: 1rem;">
+            <form action="{{ url_for('handle_request', request_id=req.id, action='reject') }}" method="POST" style="flex: 1;">
+                <button type="submit" class="btn-danger" style="width: 100%;">
+                    <i class="fas fa-times"></i> Reject
+                </button>
+            </form>
+            <form action="{{ url_for('handle_request', request_id=req.id, action='accept') }}" method="POST" style="flex: 1;">
+                <button type="submit" class="btn-primary" style="width: 100%; padding: 10px 24px; font-size: 12px;">
+                    <i class="fas fa-check"></i> Accept
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card reveal" style="padding: 4rem 2rem; text-align: center;">
+    <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: var(--text-secondary); margin: 0 auto 1.5rem;">
+        <i class="fas fa-check-circle"></i>
+    </div>
+    <h3 style="margin-bottom: 0.5rem;">All caught up!</h3>
+    <p style="color: var(--text-secondary);">You have no pending rental requests at the moment.</p>
+</div>
+{% endif %}
+{% endblock %}

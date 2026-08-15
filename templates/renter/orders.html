@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}My Orders | RentEase{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2>My <span class="gradient-text">Orders</span></h2>
+    <p style="color: var(--text-secondary);">Track the status of your rental requests.</p>
+</div>
+
+{% if orders %}
+<div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem;">
+    {% for order in orders %}
+    <div class="card reveal" style="padding: 0; overflow: hidden; display: flex; flex-direction: column;">
+        <div style="display: flex; gap: 1rem; padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <div style="width: 70px; height: 70px; border-radius: 12px; overflow: hidden; background: rgba(0,0,0,0.3); flex-shrink: 0;">
+                {% if order.image_url %}
+                    <img src="{{ url_for('static', filename='uploads/' + order.image_url) }}" alt="{{ order.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); font-size: 1.5rem;">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                {% endif %}
+            </div>
+            <div style="flex: 1;">
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem;">{{ order.title }}</h3>
+                <div style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 0.5rem;">
+                    <i class="far fa-calendar-alt"></i> {{ order.start_date.strftime('%b %d') }} - {{ order.end_date.strftime('%b %d, %Y') }}
+                </div>
+            </div>
+        </div>
+        
+        <div style="padding: 1.5rem; background: rgba(0,0,0,0.2); display: flex; justify-content: space-between; align-items: center; flex: 1;">
+            <div>
+                <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 1px;">Total Amount</p>
+                <h4 style="margin: 0; font-size: 1.2rem; color: var(--text-primary);">₹{{ order.total_amount }}</h4>
+            </div>
+            
+            <div>
+                {% if order.status == 'accepted' %}
+                    <span class="badge-accepted">
+                        <i class="fas fa-circle" style="font-size: 8px;"></i> Accepted
+                    </span>
+                {% elif order.status == 'pending' %}
+                    <span class="badge-pending">
+                        <i class="fas fa-circle" style="font-size: 8px;"></i> Pending
+                    </span>
+                {% else %}
+                    <span class="badge-rejected">
+                        <i class="fas fa-circle" style="font-size: 8px;"></i> Rejected
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card reveal text-center" style="padding: 5rem 2rem;">
+    <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: var(--text-secondary); margin: 0 auto 1.5rem;">
+        <i class="fas fa-shopping-basket"></i>
+    </div>
+    <h3 style="margin-bottom: 0.5rem;">No orders yet.</h3>
+    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">You haven't requested any items for rent.</p>
+    <a href="{{ url_for('browse') }}" class="btn btn-primary">Browse Equipment</a>
+</div>
+{% endif %}
+{% endblock %}
